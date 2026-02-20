@@ -118,25 +118,37 @@
                     <optgroup label="Cylindrical">
                         <option value="geoEquirectangular">Equirectangular</option>
                         <option value="geoMercator">Mercator</option>
-                        <option value="geoMiller">Miller</option>
+                        <option value="geoTransverseMercator">Transverse Mercator</option>
+                        <option value="geoMiller">Miller Cylindrical</option>
                         <option value="geoCylindricalEqualArea">Cylindrical Equal Area</option>
                     </optgroup>
                     <optgroup label="Pseudocylindrical">
                         <option value="geoRobinson" selected>Robinson</option>
                         <option value="geoMollweide">Mollweide</option>
                         <option value="geoEqualEarth">Equal Earth</option>
+                        <option value="geoNaturalEarth1">Natural Earth</option>
                         <option value="geoSinusoidal">Sinusoidal</option>
+                        <option value="geoEckert4">Eckert IV</option>
+                        <option value="geoWagner6">Wagner VI</option>
                     </optgroup>
                     <optgroup label="Azimuthal">
                         <option value="geoOrthographic">Orthographic</option>
                         <option value="geoStereographic">Stereographic</option>
                         <option value="geoGnomonic">Gnomonic</option>
                         <option value="geoAzimuthalEqualArea">Azimuthal Equal Area</option>
+                        <option value="geoAzimuthalEquidistant">Azimuthal Equidistant</option>
+                    </optgroup>
+                    <optgroup label="Conic">
+                        <option value="geoConicConformal">Lambert Conformal Conic</option>
+                        <option value="geoConicEqualArea">Albers Equal Area</option>
+                        <option value="geoConicEquidistant">Equidistant Conic</option>
                     </optgroup>
                     <optgroup label="Miscellaneous">
                         <option value="geoWinkel3">Winkel Tripel</option>
                         <option value="geoAitoff">Aitoff</option>
+                        <option value="geoBoggs">Boggs Eumorphic</option>
                         <option value="geoPeirceQuincuncial">Peirce Quincuncial</option>
+                        <option value="geoInterruptedHomolosine">Goode Homolosine</option>
                     </optgroup>
                 </select>
             </div>
@@ -149,6 +161,14 @@
                 <button id="toggle-graticule" class="btn-toggle active">
                     <span>Show Graticule (15°)</span>
                 </button>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Data Resolution</label>
+                <div style="display: flex; gap: 8px;">
+                    <button id="btn-res-110m" class="btn-toggle active" style="justify-content: center;">110m Detail</button>
+                    <button id="btn-res-50m" class="btn-toggle" style="justify-content: center;">50m Detail</button>
+                </div>
             </div>
 
             <div class="control-group">
@@ -178,6 +198,7 @@
             <div class="stats-overlay">
                 <div id="proj-name-display" style="font-weight: 700; color: #fff;">Robinson</div>
                 <div id="proj-type-display" style="font-size: 0.8rem; color: var(--clr-accent);">Pseudocylindrical</div>
+                <div id="loading-indicator" style="display: none; font-size: 0.75rem; color: var(--clr-accent-3); margin-top: 8px; font-weight: 600;">Loading geometry...</div>
             </div>
         </main>
     </div>

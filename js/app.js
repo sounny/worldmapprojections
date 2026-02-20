@@ -12,6 +12,8 @@ const rotLambda = document.getElementById('rot-lambda');
 const rotPhi = document.getElementById('rot-phi');
 
 let width, height;
+const worldDataCache = { '110m': null, '50m': null };
+let currentRes = '110m';
 let world = null;
 let showTissot = true;
 let showGrat = true;
@@ -20,16 +22,32 @@ let projection;
 
 // Initialize
 async function init() {
-    // Load Data
-    const response = await fetch('data/world-110m.json');
-    world = await response.json();
-    
     window.addEventListener('resize', resize);
     resize();
-    
     setupListeners();
+    await loadData('110m');
+}
+
+async function loadData(res) {
+    const indicator = document.getElementById('loading-indicator');
+    if (indicator) indicator.style.display = 'block';
+
+    if (!worldDataCache[res]) {
+        const response = await fetch(`data/world-${res}.json`);
+        worldDataCache[res] = await response.json();
+    }
+    
+    world = worldDataCache[res];
+    currentRes = res;
+    
+    // Update active button states
+    document.getElementById('btn-res-110m').classList.toggle('active', res === '110m');
+    document.getElementById('btn-res-50m').classList.toggle('active', res === '50m');
+    
+    if (indicator) indicator.style.display = 'none';
     render();
 }
+
 
 function resize() {
     const container = document.getElementById('canvas-container');
@@ -73,6 +91,14 @@ function setupListeners() {
             render();
         });
     });
+
+    document.getElementById('btn-res-110m').addEventListener('click', () => {
+        if (currentRes !== '110m') loadData('110m');
+    });
+    
+    document.getElementById('btn-res-50m').addEventListener('click', () => {
+        if (currentRes !== '50m') loadData('50m');
+    });
 }
 
 function render() {
@@ -86,16 +112,34 @@ function render() {
     if (d3[projType]) {
         projection = d3[projType]();
     } else if (d3.geoProjection) {
-        // Fallback for custom or plugin projections
         projection = d3[projType]();
+    }
+    
+    // Custom configurations for specific projections
+    if (projType === 'geoConicEqualArea' || projType === 'geoConicConformal' || projType === 'geoConicEquidistant') {
+        // Standard parallels for Albers/Lambert
+        projection.parallels([20, 50]);
+    }
+    if (projType === 'geoTransverseMercator') {
+        // Avoid default clipping logic in raw d3
+        projection.rotate([-0, 0, 0]);
     }
     
     projection
         .translate([width / 2, height / 2])
         .rotate(rotation);
 
-    // Dynamic scaling
-    const scale = Math.min(width, height) / (projType.includes('Azimuthal') || projType.includes('Orthographic') ? 2.2 : 5.5);
+    // Dynamic scaling logic
+    let scaleDivisor = 5.5;
+    if (projType.includes('Azimuthal') || projType.includes('Orthographic') || projType.includes('Stereographic') || projType.includes('Gnomonic')) {
+        scaleDivisor = 2.2;
+    } else if (projType.includes('Conic')) {
+        scaleDivisor = 4.5;
+    } else if (projType === 'geoMercator' || projType === 'geoTransverseMercator') {
+        scaleDivisor = 6.5; // Avoid overflowing too much
+    }
+
+    const scale = Math.min(width, height) / scaleDivisor;
     projection.scale(scale);
 
     const path = d3.geoPath(projection, ctx);
