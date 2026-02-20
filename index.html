@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Map Projections — Explore the Geometry of Earth</title>
+  <meta name="description" content="Explore and compare world map projections. Visualize administrative boundaries and understand distortion with modern and classic projection models.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="nav-logo">
+        <div class="nav-logo-icon">🌐</div>
+        <span>WORLD MAP PROJECTIONS</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="#explore" class="nav-link">Explore</a>
+        <a href="https://github.com/sounny/worldmapprojections" class="nav-link" target="_blank">Source</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <h1 class="hero-title animate-fade">The Geometry <br> of Our World</h1>
+      <p class="hero-tagline animate-fade" style="animation-delay: 0.1s;">
+        A comprehensive exploration of map projections. Compare geometries, visualize administrative boundaries from GADM, and understand how we flatten the globe.
+      </p>
+      <div class="hero-actions animate-fade" style="animation-delay: 0.2s;">
+        <a href="#explore" class="btn btn-primary">Start Exploring</a>
+        <a href="https://github.com/sounny/worldmapprojections" class="btn btn-secondary">GitHub Repository</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Selection Section -->
+  <section id="explore" class="container">
+    <div class="options-grid">
+      <!-- Modern Version -->
+      <article class="option-card animate-fade" style="animation-delay: 0.3s;">
+        <span class="option-icon">⚡</span>
+        <h2 class="option-title">Modern Discovery</h2>
+        <p class="option-desc">
+          Interactive projection explorer built with D3.js and modern web standards. Features high-res administrative boundaries and real-time parameter tuning.
+        </p>
+        <a href="modern.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Enter Modern Lab</a>
+      </article>
+
+      <!-- Classic Version -->
+      <article class="option-card animate-fade" style="animation-delay: 0.4s;">
+        <span class="option-icon">📜</span>
+        <h2 class="option-title">Wolfram Classic</h2>
+        <p class="option-desc">
+          The original Wolfram Demonstrations Project version. A desktop-rich interactive experience maintained in its classic educational form.
+        </p>
+        <a href="classic/index.html" class="btn btn-secondary" style="width: 100%; justify-content: center;">Open Classic</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- Info Section -->
+  <section class="container" style="padding-bottom: 100px;">
+    <div style="background: var(--clr-bg-2); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 50px; text-align: left;">
+      <h2 style="margin-bottom: 24px; font-size: 2rem;">Why Projections Matter</h2>
+      <p style="color: var(--clr-text-2); margin-bottom: 20px; font-size: 1.1rem;">
+        Every map is a compromise. To represent a curved surface on a flat plane, one must choose which properties to preserve: <strong>Area</strong>, <strong>Shape</strong>, <strong>Direction</strong>, or <strong>Distance</strong>.
+      </p>
+      <p style="color: var(--clr-text-2); font-size: 1.1rem;">
+        This tool helps GIS professionals and cartographers visualize these compromises using data from the <strong>Global Administrative Areas (GADM)</strong> database, allowing you to see exactly how your region of interest is transformed across different mathematical models.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-text">
+        Inspired by <em>"World Map Projections"</em> by Stephen Wolfram & Yu-Sung Chang (1998).<br>
+        Developed for web map professionals and cartography students.
+      </p>
+      <p class="footer-text" style="margin-top: 20px; opacity: 0.6;">
+        &copy; 2026 World Map Projections Project. All rights reserved.
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
