@@ -1,5 +1,5 @@
 /**
- * World Map Projections — Modern Discovery Engine
+ * World Map Projections — Sounny's Projections Engine
  * Core Logic & Rendering
  */
 
