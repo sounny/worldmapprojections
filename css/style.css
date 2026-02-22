@@ -116,10 +116,29 @@ code {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--clr-text-2);
+  position: relative;
+  padding: 8px 0;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--clr-accent);
+  transition: width var(--dur) var(--ease);
+  box-shadow: 0 0 8px var(--clr-accent-glow);
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 100%;
 }
 
 .nav-link:hover, .nav-link.active {
-  color: var(--clr-accent);
+  color: #fff;
+  text-shadow: 0 0 10px var(--clr-accent-glow);
 }
 
 /* --- Hero --- */
