@@ -19,6 +19,8 @@ let showTissot = true;
 let showGrat = true;
 let rotation = [0, 0, 0];
 let projection;
+let focusedFeature = null; // Stored for drill-down
+let activeData = null;      // TopoJSON processed features
 
 // Initialize
 async function init() {
@@ -40,12 +42,16 @@ async function loadData(res) {
     world = worldDataCache[res];
     currentRes = res;
     
+    // Process geometries
+    activeData = topojson.feature(world, world.objects.countries);
+    
     // Update active button states
     document.getElementById('btn-res-110m').classList.toggle('active', res === '110m');
     document.getElementById('btn-res-50m').classList.toggle('active', res === '50m');
     
     if (indicator) indicator.style.display = 'none';
     render();
+    setupSearch(); 
 }
 
 
@@ -99,6 +105,55 @@ function setupListeners() {
     document.getElementById('btn-res-50m').addEventListener('click', () => {
         if (currentRes !== '50m') loadData('50m');
     });
+
+    document.getElementById('reset-geo').addEventListener('click', () => {
+        focusedFeature = null;
+        document.getElementById('geo-search').value = '';
+        document.getElementById('drilldown-status').style.display = 'none';
+        render();
+    });
+}
+
+function setupSearch() {
+    const input = document.getElementById('geo-search');
+    const results = document.getElementById('search-results');
+    
+    input.addEventListener('input', () => {
+        const query = input.value.toLowerCase();
+        results.innerHTML = '';
+        if (query.length < 2) {
+            results.style.display = 'none';
+            return;
+        }
+
+        const matches = activeData.features
+            .filter(f => f.properties.name && f.properties.name.toLowerCase().includes(query))
+            .slice(0, 10);
+
+        if (matches.length > 0) {
+            results.style.display = 'block';
+            matches.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'search-item';
+                div.textContent = m.properties.name;
+                div.addEventListener('click', () => {
+                    focusOnFeature(m);
+                    results.style.display = 'none';
+                    input.value = m.properties.name;
+                });
+                results.appendChild(div);
+            });
+        } else {
+            results.style.display = 'none';
+        }
+    });
+}
+
+function focusOnFeature(feature) {
+    focusedFeature = feature;
+    document.getElementById('drilldown-status').style.display = 'block';
+    document.getElementById('current-location-tag').textContent = feature.properties.name;
+    render();
 }
 
 function render() {
@@ -136,10 +191,27 @@ function render() {
     } else if (projType.includes('Conic')) {
         scaleDivisor = 4.5;
     } else if (projType === 'geoMercator' || projType === 'geoTransverseMercator') {
-        scaleDivisor = 6.5; // Avoid overflowing too much
+        scaleDivisor = 6.5; 
     }
 
-    const scale = Math.min(width, height) / scaleDivisor;
+    let scale = Math.min(width, height) / scaleDivisor;
+    
+    // Geographic Drill-down: Zoom to focus
+    if (focusedFeature) {
+        const bounds = d3.geoBounds(focusedFeature);
+        const center = d3.geoCentroid(focusedFeature);
+        
+        // Update rotation to center on feature
+        projection.rotate([-center[0], -center[1], 0]);
+        
+        // Calculate fitting scale
+        const [[x0, y0], [x1, y1]] = d3.geoPath(projection.scale(100)).bounds(focusedFeature);
+        const w = x1 - x0;
+        const h = y1 - y0;
+        const s = 100 / Math.max(w / width, h / height) * 0.8; // 80% padding
+        scale = s;
+    }
+
     projection.scale(scale);
 
     const path = d3.geoPath(projection, ctx);
@@ -163,14 +235,24 @@ function render() {
     }
 
     // 3. Land
-    const countries = topojson.feature(world, world.objects.countries);
     ctx.beginPath();
-    path(countries);
+    path(activeData);
     ctx.fillStyle = 'rgba(76, 201, 240, 0.15)';
     ctx.fill();
     ctx.strokeStyle = 'rgba(76, 201, 240, 0.5)';
     ctx.lineWidth = 0.5;
     ctx.stroke();
+
+    // 3b. Focused Feature (Highlight)
+    if (focusedFeature) {
+        ctx.beginPath();
+        path(focusedFeature);
+        ctx.fillStyle = 'rgba(247, 37, 133, 0.2)';
+        ctx.fill();
+        ctx.strokeStyle = 'var(--clr-accent-3)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
 
     // 4. Tissot Indicatrices
     if (showTissot) {
